@@ -57,7 +57,7 @@ fsal_status_t GPFSFSAL_BuildExportContext(fsal_export_context_t *export_context,
   if(fp == NULL)
     {
       rc = errno;
-      LogCrit(COMPONENT_FSAL, "Error %d in setmntent(%s): %s", rc, MOUNTED,
+      LogCrit(COMPONENT_FSAL, "GPFSFSAL_BuildExportContext: Error %d in setmntent(%s): %s", rc, MOUNTED,
                       strerror(rc));
       Return(posix2fsal_error(rc), rc, INDEX_FSAL_BuildExportContext);
     }
@@ -76,7 +76,7 @@ fsal_status_t GPFSFSAL_BuildExportContext(fsal_export_context_t *export_context,
   if (mntexists == 0)
     {
       LogMajor(COMPONENT_FSAL,
-               "FSAL BUILD EXPORT CONTEXT: ERROR: Could not open GPFS mount point %s does not exist.",
+               "GPFSFSAL_BuildExportContext: GPFS mount point %s does not exist.",
                p_export_path->path);
       ReturnCode(ERR_FSAL_INVAL, 0);
     }
@@ -86,7 +86,7 @@ fsal_status_t GPFSFSAL_BuildExportContext(fsal_export_context_t *export_context,
   if(fd < 0)
     {
       LogMajor(COMPONENT_FSAL,
-               "FSAL BUILD EXPORT CONTEXT: ERROR: Could not open GPFS mount point %s: rc = %d",
+               "GPFSFSAL_BuildExportContext: Could not open GPFS mount point %s: rc = %d",
                p_export_path->path, errno);
       ReturnCode(ERR_FSAL_INVAL, 0);
     }
@@ -102,7 +102,7 @@ fsal_status_t GPFSFSAL_BuildExportContext(fsal_export_context_t *export_context,
     {
       close(fd);
       LogMajor(COMPONENT_FSAL,
-               "statfs call failed on file %s: %d", p_export_path->path, rc);
+               "GPFSFSAL_BuildExportContext: statfs call failed on file %s: %d", p_export_path->path, rc);
       ReturnCode(ERR_FSAL_INVAL, 0);
     }
   p_export_context->fsid[0] = stat_buf.f_fsid.__val[0];
@@ -118,11 +118,10 @@ fsal_status_t GPFSFSAL_BuildExportContext(fsal_export_context_t *export_context,
     {
       close(p_export_context->mount_root_fd);
       LogMajor(COMPONENT_FSAL,
-               "FSAL BUILD EXPORT CONTEXT: ERROR: Conversion from gpfs filesystem root path to handle failed : %d",
+               "GPFSFSAL_BuildExportContext: Conversion from gpfs filesystem root path to handle failed : %d",
                status.minor);
       ReturnCode(ERR_FSAL_INVAL, 0);
     }
-
   Return(ERR_FSAL_NO_ERROR, 0, INDEX_FSAL_BuildExportContext);
 }
 
